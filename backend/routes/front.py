@@ -7,11 +7,7 @@ front_bp = Blueprint('front', __name__)
 
 @front_bp.route('/')
 def index():
-    if 'username' in session:
-        user = User.query.filter_by(username=session['username']).first()
-        if user and user.role in ('student', 'teacher'):
-            return redirect(url_for('front.dashboard'))
-        return redirect(url_for('front.predashboard'))
+    # Always show the public index page regardless of session
     return render_template('index.html')
 
 @front_bp.route('/dashboard')
@@ -63,6 +59,8 @@ def dashboard():
     return render_template(
         'dashboard.html',
         username=session['username'],
+        user=user,
+        courses=courses,
         schedule=schedule,
         days_names=days_names,
         week_dates=week_dates,

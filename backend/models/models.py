@@ -1,5 +1,6 @@
 from backend.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import foreign
 
 
 class User(db.Model):
@@ -13,8 +14,6 @@ class User(db.Model):
     # Use a FK to a Career table instead of a free text field
     career = db.Column(db.String(150), nullable=True)
 
-    # Relationship to Career
-    career_obj = db.relationship('Career', back_populates='users')
 
     # Many-to-many convenience: user.courses -> list of Course
     courses = db.relationship(
@@ -25,7 +24,7 @@ class User(db.Model):
     )
 
     # Relationship to association rows (User_course)
-    user_courses = db.relationship('User_course', back_populates='user', cascade='all, delete-orphan')
+    user_courses = db.relationship('User_course', back_populates='user', cascade='all, delete-orphan', overlaps='courses,students')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -44,14 +43,22 @@ class Course(db.Model):
     end_time = db.Column(db.Time, nullable=False)
     career = db.Column(db.String(150)) # Add this line
 
+    # Relationship to association rows (User_course)
+    user_courses = db.relationship('User_course', back_populates='course', cascade='all, delete-orphan', overlaps='students,courses')
+
 class Career(db.Model):
     __tablename__ = 'career'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
 
-    # Users that belong to this career
-    users = db.relationship('User', back_populates='career_obj', lazy='dynamic')
+    # Users that belong to this career (User.career is a string name)
+    users = db.relationship(
+        'User',
+        primaryjoin="Career.name == foreign(User.career)",
+        viewonly=True,
+        lazy='dynamic'
+    )
 
 
 class User_course(db.Model):

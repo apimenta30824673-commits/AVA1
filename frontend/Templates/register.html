@@ -231,7 +231,7 @@
                                 });
                                 const data = await res.json().catch(()=>({}));
                                 if (res.ok) {
-                                    window.location.href = "{{ url_for('front.predashboard') }}";
+                                    window.location.href = "{{ url_for('front.index') }}";
                                 } else {
                                     const msg = data.error || data.message || 'Error en el registro';
                                     errorBox.textContent = msg;
