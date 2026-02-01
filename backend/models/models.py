@@ -36,18 +36,13 @@ class User(db.Model):
 
 class Course(db.Model):
     __tablename__ = 'course'
-
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-    aula = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(150), nullable=False)
+    aula = db.Column(db.String(100))
     dia = db.Column(db.Integer, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
-    carrer = db.Column(db.String(150), nullable=True)
-
-    # Relationship to association rows (User_course)
-    user_courses = db.relationship('User_course', back_populates='course', cascade='all, delete-orphan')
-
+    career = db.Column(db.String(150)) # Add this line
 
 class Career(db.Model):
     __tablename__ = 'career'
